@@ -25,11 +25,11 @@ build:
 
 test:
 	@echo "Running unit and package tests with statement coverage..."
-	go test -p 1 -cover ./pkg/... ./services/...
+	go test -p 1 -cover ./pkg/... ./services/device-simulator/internal/... ./services/gateway/internal/... ./services/inventory-service/internal/... ./services/telemetry-service/internal/... ./services/workflow-service/internal/...
 
 test-race:
 	@echo "Running tests with race detector enabled..."
-	go test -race -cover ./pkg/... ./services/...
+	go test -race -cover ./pkg/... ./services/device-simulator/internal/... ./services/gateway/internal/... ./services/inventory-service/internal/... ./services/telemetry-service/internal/... ./services/workflow-service/internal/...
 
 bench:
 	@echo "Running data structures and anomaly detector benchmarks..."

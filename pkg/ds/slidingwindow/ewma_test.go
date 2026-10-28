@@ -130,6 +130,28 @@ func TestDetectorConcurrency(t *testing.T) {
 	}
 }
 
+func TestDetectorConfigAndReset(t *testing.T) {
+	// Test fallback configs (zero / negative values)
+	cfg := DetectorConfig{
+		MetricName:      "test",
+		Alpha:           -1,
+		ZScoreThreshold: -1,
+		WarmupSamples:   -1,
+		MinStdDev:       -1,
+	}
+	det := NewDetector(cfg)
+	det.Update(10.0)
+	mean, sd, samples := det.CurrentStats()
+	if samples != 1 || mean != 10.0 || sd <= 0 {
+		t.Fatalf("unexpected stats: %v, %v, %v", mean, sd, samples)
+	}
+	det.Reset()
+	_, _, samples = det.CurrentStats()
+	if samples != 0 {
+		t.Fatalf("expected 0 samples after reset")
+	}
+}
+
 func BenchmarkDetectorUpdate(b *testing.B) {
 	cfg := DefaultConfig("benchmark_metric")
 	detector := NewDetector(cfg)

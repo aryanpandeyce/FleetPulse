@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
@@ -471,6 +472,63 @@ func TestNilClientsAndServiceUnavailable(t *testing.T) {
 		r.ServeHTTP(rec, req)
 		if rec.Code != http.StatusServiceUnavailable {
 			t.Fatalf("expected 503 Service Unavailable for %s with nil client, got %d", path, rec.Code)
+		}
+	}
+
+	// Post routes with nil clients
+	adminToken, _ := tm.GenerateAccessToken("u-admin", "org-1", auth.RoleAdmin)
+	claimReq := httptest.NewRequest("POST", "/api/v1/devices/claims", bytes.NewBufferString(`{"ttl_seconds":300}`))
+	claimReq.Header.Set("Authorization", "Bearer "+adminToken)
+	claimRec := httptest.NewRecorder()
+	r.ServeHTTP(claimRec, claimReq)
+	if claimRec.Code != http.StatusServiceUnavailable {
+		t.Fatalf("expected 503 for create claim with nil client, got %d", claimRec.Code)
+	}
+
+	ackReq := httptest.NewRequest("POST", "/api/v1/alarms/alm-1/acknowledge", nil)
+	ackReq.Header.Set("Authorization", "Bearer "+token)
+	ackRec := httptest.NewRecorder()
+	r.ServeHTTP(ackRec, ackReq)
+	if ackRec.Code != http.StatusServiceUnavailable {
+		t.Fatalf("expected 503 for ack alarm with nil client, got %d", ackRec.Code)
+	}
+
+	cancelReq := httptest.NewRequest("POST", "/api/v1/workflows/job-1/cancel", nil)
+	cancelReq.Header.Set("Authorization", "Bearer "+token)
+	cancelRec := httptest.NewRecorder()
+	r.ServeHTTP(cancelRec, cancelReq)
+	if cancelRec.Code != http.StatusServiceUnavailable {
+		t.Fatalf("expected 503 for cancel workflow with nil client, got %d", cancelRec.Code)
+	}
+
+	createWfReq := httptest.NewRequest("POST", "/api/v1/workflows", bytes.NewBufferString(`{"type":"firmware_upgrade","targets":["dev-1"]}`))
+	createWfReq.Header.Set("Authorization", "Bearer "+token)
+	createWfRec := httptest.NewRecorder()
+	r.ServeHTTP(createWfRec, createWfReq)
+	if createWfRec.Code != http.StatusServiceUnavailable {
+		t.Fatalf("expected 503 for create workflow with nil client, got %d", createWfRec.Code)
+	}
+}
+
+func TestHandleGRPCErrorMappings(t *testing.T) {
+	testCases := []struct {
+		err          error
+		expectedCode int
+	}{
+		{errors.New("plain non-grpc error"), http.StatusInternalServerError},
+		{status.Error(codes.NotFound, "not found"), http.StatusNotFound},
+		{status.Error(codes.InvalidArgument, "invalid argument"), http.StatusBadRequest},
+		{status.Error(codes.Unauthenticated, "unauthenticated"), http.StatusUnauthorized},
+		{status.Error(codes.PermissionDenied, "permission denied"), http.StatusForbidden},
+		{status.Error(codes.Unavailable, "unavailable"), http.StatusInternalServerError},
+	}
+
+	for _, tc := range testCases {
+		req := httptest.NewRequest("GET", "/test", nil)
+		rec := httptest.NewRecorder()
+		handleGRPCError(rec, req, tc.err)
+		if rec.Code != tc.expectedCode {
+			t.Fatalf("expected code %d for error %v, got %d", tc.expectedCode, tc.err, rec.Code)
 		}
 	}
 }
