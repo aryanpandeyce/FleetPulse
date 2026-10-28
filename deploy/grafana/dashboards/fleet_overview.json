@@ -1,0 +1,98 @@
+{
+  "annotations": { "list": [] },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": null,
+  "links": [],
+  "liveNow": true,
+  "panels": [
+    {
+      "collapsed": false,
+      "gridPos": { "h": 6, "w": 6, "x": 0, "y": 0 },
+      "id": 1,
+      "title": "Total Monitored Servers",
+      "type": "stat",
+      "targets": [
+        { "expr": "sum(fleetpulse_devices_total)", "refId": "A" }
+      ],
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto"
+      }
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 6, "w": 6, "x": 6, "y": 0 },
+      "id": 2,
+      "title": "Healthy Servers (OK)",
+      "type": "stat",
+      "targets": [
+        { "expr": "sum(fleetpulse_devices_total{health=\"ok\"})", "refId": "A" }
+      ],
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto"
+      }
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 6, "w": 6, "x": 12, "y": 0 },
+      "id": 3,
+      "title": "Warning / Drifted",
+      "type": "stat",
+      "targets": [
+        { "expr": "sum(fleetpulse_devices_total{health=\"warning\"})", "refId": "A" }
+      ],
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto"
+      }
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 6, "w": 6, "x": 18, "y": 0 },
+      "id": 4,
+      "title": "Active Critical Alarms",
+      "type": "stat",
+      "targets": [
+        { "expr": "sum(fleetpulse_alarms_active{severity=\"critical\"})", "refId": "A" }
+      ],
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto"
+      }
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 9, "w": 12, "x": 0, "y": 6 },
+      "id": 5,
+      "title": "Fleet Health State Distribution",
+      "type": "piechart",
+      "targets": [
+        { "expr": "sum by (health) (fleetpulse_devices_total)", "refId": "A", "legendFormat": "{{health}}" }
+      ]
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 9, "w": 12, "x": 12, "y": 6 },
+      "id": 6,
+      "title": "Server Model Breakdown",
+      "type": "piechart",
+      "targets": [
+        { "expr": "sum by (model) (fleetpulse_devices_total)", "refId": "A", "legendFormat": "{{model}}" }
+      ]
+    }
+  ],
+  "refresh": "5s",
+  "schemaVersion": 38,
+  "style": "dark",
+  "tags": ["fleetpulse", "overview", "intersight"],
+  "time": { "from": "now-1h", "to": "now" },
+  "title": "FleetPulse - Fleet Overview",
+  "uid": "fleetpulse-overview"
+}

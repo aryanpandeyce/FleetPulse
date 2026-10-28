@@ -1,0 +1,69 @@
+{
+  "annotations": { "list": [] },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": null,
+  "links": [],
+  "liveNow": true,
+  "panels": [
+    {
+      "collapsed": false,
+      "gridPos": { "h": 8, "w": 8, "x": 0, "y": 0 },
+      "id": 1,
+      "title": "Gateway Rate (RPS)",
+      "type": "timeseries",
+      "targets": [
+        { "expr": "sum(rate(fleetpulse_http_requests_total[1m])) by (service)", "refId": "A", "legendFormat": "{{service}}" }
+      ]
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 8, "w": 8, "x": 8, "y": 0 },
+      "id": 2,
+      "title": "Error Rate (5xx %)",
+      "type": "timeseries",
+      "targets": [
+        { "expr": "sum(rate(fleetpulse_http_requests_total{status=~\"5..\"}[1m])) / sum(rate(fleetpulse_http_requests_total[1m])) * 100", "refId": "A", "legendFormat": "5xx Error %" }
+      ]
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 8, "w": 8, "x": 16, "y": 0 },
+      "id": 3,
+      "title": "Latency (p95 & p99 ms)",
+      "type": "timeseries",
+      "targets": [
+        { "expr": "histogram_quantile(0.95, sum(rate(fleetpulse_http_request_duration_seconds_bucket[1m])) by (le)) * 1000", "refId": "A", "legendFormat": "p95 ms" },
+        { "expr": "histogram_quantile(0.99, sum(rate(fleetpulse_http_request_duration_seconds_bucket[1m])) by (le)) * 1000", "refId": "B", "legendFormat": "p99 ms" }
+      ]
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 },
+      "id": 4,
+      "title": "Rate Limit 429 Throttle Rate",
+      "type": "timeseries",
+      "targets": [
+        { "expr": "sum(rate(fleetpulse_http_requests_total{status=\"429\"}[1m]))", "refId": "A", "legendFormat": "Rate-Limited Req/s" }
+      ]
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 8 },
+      "id": 5,
+      "title": "Internal gRPC Service Latencies (p95)",
+      "type": "timeseries",
+      "targets": [
+        { "expr": "histogram_quantile(0.95, sum(rate(fleetpulse_grpc_request_duration_seconds_bucket[1m])) by (le, grpc_service)) * 1000", "refId": "A", "legendFormat": "{{grpc_service}}" }
+      ]
+    }
+  ],
+  "refresh": "5s",
+  "schemaVersion": 38,
+  "style": "dark",
+  "tags": ["fleetpulse", "red", "slo"],
+  "time": { "from": "now-1h", "to": "now" },
+  "title": "FleetPulse - Service RED & SLO",
+  "uid": "fleetpulse-red-slo"
+}

@@ -127,7 +127,7 @@
   - **Priority**: P1
   - **Dependencies**: TASK-P0-14
 
-- [ ] **TASK-P1-02**: Prometheus Metrics Instrumentation & 3 Provisioned Grafana Dashboards
+- [x] **TASK-P1-02**: Prometheus Metrics Instrumentation & 3 Provisioned Grafana Dashboards
   - **Files Touched**: `deploy/grafana/dashboards/*.json`, `deploy/grafana/provisioning/...`
   - **Acceptance Criteria**: Fleet Overview, Service RED/SLO, and Telemetry & Workflow Pipeline dashboards automatically loaded in Grafana.
   - **Priority**: P1

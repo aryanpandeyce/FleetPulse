@@ -1,0 +1,58 @@
+{
+  "annotations": { "list": [] },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": null,
+  "links": [],
+  "liveNow": true,
+  "panels": [
+    {
+      "collapsed": false,
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+      "id": 1,
+      "title": "NATS Telemetry Stream Ingest Rate (msgs/sec)",
+      "type": "timeseries",
+      "targets": [
+        { "expr": "sum(rate(fleetpulse_telemetry_samples_ingested_total[1m]))", "refId": "A", "legendFormat": "Ingest msg/s" }
+      ]
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+      "id": 2,
+      "title": "Active Alarms by Severity",
+      "type": "timeseries",
+      "targets": [
+        { "expr": "sum by (severity) (fleetpulse_alarms_active)", "refId": "A", "legendFormat": "{{severity}}" }
+      ]
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 },
+      "id": 3,
+      "title": "Workflow Jobs by State",
+      "type": "timeseries",
+      "targets": [
+        { "expr": "sum by (state) (fleetpulse_jobs_total)", "refId": "A", "legendFormat": "{{state}}" }
+      ]
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 8 },
+      "id": 4,
+      "title": "Priority Min-Heap Queue Depth",
+      "type": "timeseries",
+      "targets": [
+        { "expr": "fleetpulse_workflow_queue_depth", "refId": "A", "legendFormat": "Enqueued Jobs" }
+      ]
+    }
+  ],
+  "refresh": "5s",
+  "schemaVersion": 38,
+  "style": "dark",
+  "tags": ["fleetpulse", "telemetry", "pipeline"],
+  "time": { "from": "now-1h", "to": "now" },
+  "title": "FleetPulse - Telemetry & Workflow Pipeline",
+  "uid": "fleetpulse-pipeline"
+}
