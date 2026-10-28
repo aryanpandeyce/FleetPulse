@@ -68,7 +68,7 @@
   - **Priority**: P0
   - **Dependencies**: TASK-P0-05, TASK-P0-08
 
-- [ ] **TASK-P0-10**: Implement API Gateway with Multi-Tenancy & Rate Limiting
+- [x] **TASK-P0-10**: Implement API Gateway with Multi-Tenancy & Rate Limiting
   - **Files Touched**: `services/gateway/...`
   - **Acceptance Criteria**: Public Chi router, bcrypt user authentication, JWT issuance & validation, RBAC middleware, gRPC clients forwarding `org_id` metadata, Redis token-bucket rate limiting with in-memory fallback, tenant isolation tests.
   - **Priority**: P0
