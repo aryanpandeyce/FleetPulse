@@ -145,7 +145,7 @@
   - **Priority**: P1
   - **Dependencies**: TASK-P0-14
 
-- [ ] **TASK-P1-05**: Redis Lease Leader Election & Stuck Job Crash Recovery
+- [x] **TASK-P1-05**: Redis Lease Leader Election & Stuck Job Crash Recovery
   - **Files Touched**: `services/workflow-service/internal/scheduler/leader.go`, `services/workflow-service/internal/scheduler/leader_test.go`
   - **Acceptance Criteria**: Distributed lease with heartbeats; proven failover test; automatic recovery of jobs stuck in `running` state.
   - **Priority**: P1
