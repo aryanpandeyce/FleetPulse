@@ -17,8 +17,12 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version: '1.22'
+          go-version-file: 'go.mod'
+          check-latest: true
           cache: true
+
+      - name: Download Dependencies
+        run: go mod download
 
       - name: Verify Dependencies
         run: go mod verify
@@ -27,8 +31,6 @@ jobs:
         run: go vet ./...
 
       - name: Run Unit Tests with Race Detector
-        env:
-          GOTOOLCHAIN: local
         run: |
           go test -race -v -coverprofile=coverage.txt -covermode=atomic ./pkg/... ./services/device-simulator/internal/... ./services/gateway/internal/... ./services/inventory-service/internal/... ./services/telemetry-service/internal/... ./services/workflow-service/internal/...
 
