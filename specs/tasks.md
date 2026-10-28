@@ -74,7 +74,7 @@
   - **Priority**: P0
   - **Dependencies**: TASK-P0-04, TASK-P0-07, TASK-P0-09
 
-- [ ] **TASK-P0-11**: Implement Device Simulator with Redfish REST & NATS Connector
+- [x] **TASK-P0-11**: Implement Device Simulator with Redfish REST & NATS Connector
   - **Files Touched**: `services/device-simulator/...`
   - **Acceptance Criteria**: Spawns $N$ simulated servers (`UCS-C220-M7`, `UCS-C240-M7`, `UCS-X210c`), seeded random-walk telemetry, Redfish REST API, fault injection API (`POST /sim/faults`), NATS JetStream publisher with consistent-hash worker pool sharding.
   - **Priority**: P0
