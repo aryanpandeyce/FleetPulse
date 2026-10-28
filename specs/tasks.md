@@ -86,7 +86,7 @@
   - **Priority**: P0
   - **Dependencies**: TASK-P0-06, TASK-P0-08
 
-- [ ] **TASK-P0-13**: Implement Workflow Service with Priority Min-Heap Scheduler
+- [x] **TASK-P0-13**: Implement Workflow Service with Priority Min-Heap Scheduler
   - **Files Touched**: `services/workflow-service/...`
   - **Acceptance Criteria**: Min-heap priority scheduling queue, idempotency key deduplication, exponential backoff retries, firmware upgrade execution against simulated Redfish endpoints, gRPC API, unit tests.
   - **Priority**: P0
