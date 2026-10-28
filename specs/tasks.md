@@ -105,7 +105,7 @@
   - **Priority**: P0
   - **Dependencies**: TASK-P0-14
 
-- [ ] **TASK-P0-16**: React + Vite + TypeScript Dashboard with Demo Mode
+- [x] **TASK-P0-16**: React + Vite + TypeScript Dashboard with Demo Mode
   - **Files Touched**: `dashboard/...`, `.github/workflows/dashboard-pages.yml`
   - **Acceptance Criteria**: Responsive modern UI with Tailwind + Recharts; Fleet Overview (health donut, model distribution, alarm trends), Devices list with filters, Device Detail with live charts & anomaly badges, Alarms management, Workflows; built-in deterministic Demo Mode for GitHub Pages.
   - **Priority**: P0
