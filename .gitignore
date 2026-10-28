@@ -1,0 +1,31 @@
+# Binaries and tools
+bin/
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test artifacts
+*.test
+*.out
+cover.html
+coverage.txt
+
+# Environment and secrets
+.env
+.env.local
+
+# IDEs
+.idea/
+.vscode/
+
+# OS
+Thumbs.db
+[Dd]esktop.ini
+
+# Node modules
+node_modules/
+dist/
+dashboard/dist/
+dashboard/node_modules/

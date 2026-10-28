@@ -1,0 +1,91 @@
+syntax = "proto3";
+
+package fleetpulse.telemetry.v1;
+
+option go_package = "github.com/fleetpulse/fleetpulse/api/proto/telemetryv1;telemetryv1";
+
+service TelemetryService {
+  rpc GetDeviceTelemetry (GetDeviceTelemetryRequest) returns (GetDeviceTelemetryResponse);
+  rpc ListAlarms (ListAlarmsRequest) returns (ListAlarmsResponse);
+  rpc AcknowledgeAlarm (AcknowledgeAlarmRequest) returns (AcknowledgeAlarmResponse);
+  rpc GetFleetSummary (GetFleetSummaryRequest) returns (GetFleetSummaryResponse);
+}
+
+message TelemetrySample {
+  string device_id = 1;
+  string serial = 2;
+  string model = 3;
+  double inlet_temp_celsius = 4;
+  double cpu_temp_celsius = 5;
+  repeated int32 fan_rpm = 6;
+  repeated double power_watts = 7;
+  int64 memory_errors_correctable = 8;
+  int64 timestamp_unix = 9;
+}
+
+message GetDeviceTelemetryRequest {
+  string device_id = 1;
+  int32 limit = 2;
+}
+
+message GetDeviceTelemetryResponse {
+  repeated TelemetrySample samples = 1;
+}
+
+message Alarm {
+  string id = 1;
+  string org_id = 2;
+  string device_id = 3;
+  string rule_name = 4;
+  string severity = 5; // "info", "warning", "critical"
+  string status = 6;   // "raised", "acknowledged", "cleared"
+  string message = 7;
+  string metric_name = 8;
+  double current_value = 9;
+  double threshold_value = 10;
+  int64 raised_at_unix = 11;
+  int64 acknowledged_at_unix = 12;
+  string acknowledged_by = 13;
+}
+
+message ListAlarmsRequest {
+  string device_id = 1;
+  string severity = 2;
+  string status = 3;
+  int32 limit = 4;
+}
+
+message ListAlarmsResponse {
+  repeated Alarm alarms = 1;
+}
+
+message AcknowledgeAlarmRequest {
+  string alarm_id = 1;
+}
+
+message AcknowledgeAlarmResponse {
+  bool success = 1;
+  Alarm alarm = 2;
+}
+
+message GetFleetSummaryRequest {}
+
+message FleetHealthCount {
+  int64 ok_count = 1;
+  int64 warning_count = 2;
+  int64 critical_count = 3;
+  int64 total_devices = 4;
+}
+
+message AnomalousDevice {
+  string device_id = 1;
+  string serial = 2;
+  string metric_name = 3;
+  double anomaly_score = 4;
+  string explanation = 5;
+}
+
+message GetFleetSummaryResponse {
+  FleetHealthCount health = 1;
+  repeated AnomalousDevice top_anomalies = 2;
+}

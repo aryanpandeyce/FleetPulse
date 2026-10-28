@@ -1,0 +1,319 @@
+openapi: 3.0.3
+info:
+  title: FleetPulse Gateway REST API
+  description: Public control plane API for FleetPulse compute fleet management platform.
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080
+    description: Local API Gateway
+paths:
+  /healthz:
+    get:
+      summary: Liveness Probe
+      responses:
+        '200':
+          description: Service alive
+  /readyz:
+    get:
+      summary: Readiness Probe
+      responses:
+        '200':
+          description: Dependencies healthy
+        '503':
+          description: Dependency unavailable
+  /metrics:
+    get:
+      summary: Prometheus Metrics
+      responses:
+        '200':
+          description: Prometheus RED metrics
+  /api/v1/auth/login:
+    post:
+      summary: Authenticate User
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+      responses:
+        '200':
+          description: Authentication successful
+        '401':
+          description: Invalid credentials
+  /api/v1/auth/refresh:
+    post:
+      summary: Refresh Access Token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [refresh_token]
+              properties:
+                refresh_token:
+                  type: string
+      responses:
+        '200':
+          description: Token refreshed
+        '401':
+          description: Expired or invalid refresh token
+  /api/v1/devices:
+    get:
+      summary: List fleet devices with keyset cursor pagination
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: cursor
+          in: query
+          schema:
+            type: string
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+        - name: model
+          in: query
+          schema:
+            type: string
+        - name: health
+          in: query
+          schema:
+            type: string
+            enum: [ok, warning, critical]
+        - name: firmware
+          in: query
+          schema:
+            type: string
+        - name: connection
+          in: query
+          schema:
+            type: string
+            enum: [connected, disconnected]
+      responses:
+        '200':
+          description: List of devices
+        '401':
+          description: Unauthorized
+        '429':
+          description: Rate limit exceeded
+  /api/v1/devices/{id}:
+    get:
+      summary: Get device details by ID or serial
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Device details
+        '404':
+          description: Device not found
+  /api/v1/devices/claims:
+    post:
+      summary: Generate single-use device claim code (Admin only)
+      security:
+        - BearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                ttl_seconds:
+                  type: integer
+                  default: 900
+      responses:
+        '201':
+          description: Claim code created
+        '403':
+          description: Forbidden (Admin required)
+  /api/v1/devices/{id}/telemetry:
+    get:
+      summary: Get real-time telemetry ring buffer samples
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 60
+      responses:
+        '200':
+          description: Historical telemetry samples
+  /api/v1/alarms:
+    get:
+      summary: List alarms filtered by device, severity, status
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: device_id
+          in: query
+          schema:
+            type: string
+        - name: severity
+          in: query
+          schema:
+            type: string
+            enum: [info, warning, critical]
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [raised, acknowledged, cleared]
+      responses:
+        '200':
+          description: List of alarms
+  /api/v1/alarms/{id}/acknowledge:
+    post:
+      summary: Acknowledge active alarm (Operator+)
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Alarm acknowledged
+  /api/v1/profiles:
+    get:
+      summary: List server configuration profiles
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: List of profiles
+    post:
+      summary: Create new server profile (Admin only)
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, target_firmware]
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+                target_firmware:
+                  type: string
+                power_policy:
+                  type: string
+                boot_order:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        '201':
+          description: Profile created
+  /api/v1/workflows:
+    get:
+      summary: List workflow jobs
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: state
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of workflow jobs
+    post:
+      summary: Submit workflow job with idempotency key (Operator+)
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [type, idempotency_key, targets]
+              properties:
+                type:
+                  type: string
+                  enum: [firmware_upgrade, drift_remediation, power_cycle]
+                priority:
+                  type: integer
+                  enum: [1, 2, 3]
+                  default: 2
+                targets:
+                  type: array
+                  items:
+                    type: string
+                idempotency_key:
+                  type: string
+                parameters:
+                  type: object
+      responses:
+        '201':
+          description: Job created or existing idempotent record returned
+  /api/v1/workflows/{id}:
+    get:
+      summary: Get workflow job status and step history
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Job status
+  /api/v1/workflows/{id}/cancel:
+    post:
+      summary: Cancel queued or running workflow job (Operator+)
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Job cancellation initiated
+  /api/v1/fleet/summary:
+    get:
+      summary: Get overall fleet health breakdown and top anomalous servers
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Fleet health summary
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

@@ -1,0 +1,117 @@
+syntax = "proto3";
+
+package fleetpulse.inventory.v1;
+
+option go_package = "github.com/fleetpulse/fleetpulse/api/proto/inventoryv1;inventoryv1";
+
+service InventoryService {
+  rpc GetDevice (GetDeviceRequest) returns (GetDeviceResponse);
+  rpc ListDevices (ListDevicesRequest) returns (ListDevicesResponse);
+  rpc CreateClaimCode (CreateClaimCodeRequest) returns (CreateClaimCodeResponse);
+  rpc ClaimDevice (ClaimDeviceRequest) returns (ClaimDeviceResponse);
+  rpc EvaluateCompliance (EvaluateComplianceRequest) returns (EvaluateComplianceResponse);
+  rpc GetServerProfile (GetServerProfileRequest) returns (GetServerProfileResponse);
+}
+
+message Device {
+  string id = 1;
+  string org_id = 2;
+  string serial = 3;
+  string model = 4;
+  string firmware_version = 5;
+  string power_state = 6;
+  string health_status = 7;
+  string connection_state = 8;
+  map<string, string> tags = 9;
+  int32 version = 10;
+  int64 claimed_at_unix = 11;
+  int64 last_seen_at_unix = 12;
+}
+
+message GetDeviceRequest {
+  string id = 1;
+  string serial = 2;
+}
+
+message GetDeviceResponse {
+  Device device = 1;
+}
+
+message ListDevicesRequest {
+  string cursor = 1;
+  int32 limit = 2;
+  string model = 3;
+  string health_status = 4;
+  string firmware_version = 5;
+  string connection_state = 6;
+}
+
+message ListDevicesResponse {
+  repeated Device devices = 1;
+  string next_cursor = 2;
+  bool has_more = 3;
+  int64 total_count = 4;
+}
+
+message CreateClaimCodeRequest {
+  int64 ttl_seconds = 1;
+}
+
+message CreateClaimCodeResponse {
+  string claim_code = 1;
+  int64 expires_at_unix = 2;
+}
+
+message ClaimDeviceRequest {
+  string claim_code = 1;
+  string serial = 2;
+  string model = 3;
+  string initial_firmware = 4;
+}
+
+message ClaimDeviceResponse {
+  bool success = 1;
+  Device device = 2;
+  string message = 3;
+}
+
+message ServerProfile {
+  string id = 1;
+  string org_id = 2;
+  string name = 3;
+  string description = 4;
+  string target_firmware = 5;
+  string power_policy = 6;
+  repeated string boot_order = 7;
+}
+
+message GetServerProfileRequest {
+  string id = 1;
+}
+
+message GetServerProfileResponse {
+  ServerProfile profile = 1;
+}
+
+message DriftItem {
+  string component = 1;
+  string actual_value = 2;
+  string expected_value = 3;
+}
+
+message ComplianceResult {
+  string id = 1;
+  string device_id = 2;
+  string profile_id = 3;
+  string status = 4; // "compliant" or "drifted"
+  repeated DriftItem drift_details = 5;
+  int64 evaluated_at_unix = 6;
+}
+
+message EvaluateComplianceRequest {
+  string device_id = 1;
+}
+
+message EvaluateComplianceResponse {
+  ComplianceResult result = 1;
+}

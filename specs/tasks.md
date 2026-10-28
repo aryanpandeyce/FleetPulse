@@ -55,7 +55,7 @@
   - **Priority**: P0
   - **Dependencies**: TASK-P0-01
 
-- [ ] **TASK-P0-08**: Define Protocol Buffers & Public OpenAPI Specification
+- [x] **TASK-P0-08**: Define Protocol Buffers & Public OpenAPI Specification
   - **Files Touched**: `api/proto/inventory.proto`, `api/proto/telemetry.proto`, `api/proto/workflow.proto`, `api/openapi.yaml`, `api/proto/*.pb.go`
   - **Acceptance Criteria**: Complete RPC definitions for all 3 internal services; OpenAPI 3.0 yaml defining all public Gateway endpoints; generated Go gRPC stubs.
   - **Priority**: P0

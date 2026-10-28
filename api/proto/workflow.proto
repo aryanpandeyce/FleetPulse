@@ -1,0 +1,76 @@
+syntax = "proto3";
+
+package fleetpulse.workflow.v1;
+
+option go_package = "github.com/fleetpulse/fleetpulse/api/proto/workflowv1;workflowv1";
+
+service WorkflowService {
+  rpc CreateJob (CreateJobRequest) returns (CreateJobResponse);
+  rpc GetJob (GetJobRequest) returns (GetJobResponse);
+  rpc CancelJob (CancelJobRequest) returns (CancelJobResponse);
+  rpc ListJobs (ListJobsRequest) returns (ListJobsResponse);
+}
+
+message StepRecord {
+  string step_name = 1;
+  string status = 2; // "running", "success", "failed"
+  string target = 3;
+  string message = 4;
+  int64 timestamp_unix = 5;
+}
+
+message Job {
+  string id = 1;
+  string org_id = 2;
+  string type = 3;       // "firmware_upgrade", "drift_remediation", "power_cycle"
+  int32 priority = 4;    // 1=High, 2=Normal, 3=Low
+  string state = 5;      // "queued", "running", "succeeded", "failed", "cancelled"
+  repeated string targets = 6;
+  map<string, string> parameters = 7;
+  string idempotency_key = 8;
+  int32 attempts = 9;
+  int32 max_attempts = 10;
+  repeated StepRecord step_history = 11;
+  string error_message = 12;
+  int64 created_at_unix = 13;
+  int64 started_at_unix = 14;
+  int64 completed_at_unix = 15;
+}
+
+message CreateJobRequest {
+  string type = 1;
+  int32 priority = 2;
+  repeated string targets = 3;
+  map<string, string> parameters = 4;
+  string idempotency_key = 5;
+}
+
+message CreateJobResponse {
+  Job job = 1;
+}
+
+message GetJobRequest {
+  string id = 1;
+}
+
+message GetJobResponse {
+  Job job = 1;
+}
+
+message CancelJobRequest {
+  string id = 1;
+}
+
+message CancelJobResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message ListJobsRequest {
+  string state = 1;
+  int32 limit = 2;
+}
+
+message ListJobsResponse {
+  repeated Job jobs = 1;
+}
