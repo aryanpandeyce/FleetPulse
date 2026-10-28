@@ -18,31 +18,31 @@
 ## Phase 1: Core P0 Implementation
 
 ### Data Structures & Algorithms (`pkg/ds`)
-- [ ] **TASK-P0-02**: Implement Consistent Hash Ring with Virtual Nodes
+- [x] **TASK-P0-02**: Implement Consistent Hash Ring with Virtual Nodes
   - **Files Touched**: `pkg/ds/consistenthash/ring.go`, `pkg/ds/consistenthash/ring_test.go`
   - **Acceptance Criteria**: Virtual node hashing, binary search node lookup, distribution variance $\le 15\%$ on 1,000 keys, unit tests with `-race`, benchmarks.
   - **Priority**: P0
   - **Dependencies**: TASK-P0-01
 
-- [ ] **TASK-P0-03**: Implement Generic Binary Min-Heap Priority Queue
+- [x] **TASK-P0-03**: Implement Generic Binary Min-Heap Priority Queue
   - **Files Touched**: `pkg/ds/minheap/minheap.go`, `pkg/ds/minheap/minheap_test.go`
   - **Acceptance Criteria**: Custom implementation without `container/heap`, generic comparator, $O(\log N)$ push/pop, $O(1)$ peek, comprehensive unit tests and benchmarks.
   - **Priority**: P0
   - **Dependencies**: TASK-P0-01
 
-- [ ] **TASK-P0-04**: Implement Token Bucket Rate Limiter with Mockable Clock
+- [x] **TASK-P0-04**: Implement Token Bucket Rate Limiter with Mockable Clock
   - **Files Touched**: `pkg/ds/tokenbucket/limiter.go`, `pkg/ds/tokenbucket/limiter_test.go`
   - **Acceptance Criteria**: Fractional refill calculation, thread-safe consumption, burst capacity enforcement, fake clock testing, zero external deps.
   - **Priority**: P0
   - **Dependencies**: TASK-P0-01
 
-- [ ] **TASK-P0-05**: Implement Thread-Safe LRU Cache
+- [x] **TASK-P0-05**: Implement Thread-Safe LRU Cache
   - **Files Touched**: `pkg/ds/lru/lru.go`, `pkg/ds/lru/lru_test.go`
   - **Acceptance Criteria**: Doubly linked list + map, thread-safe with `sync.RWMutex`, $O(1)$ get/put/eviction, hit/miss statistics, optional TTL, tests + benchmarks.
   - **Priority**: P0
   - **Dependencies**: TASK-P0-01
 
-- [ ] **TASK-P0-06**: Implement EWMA & Rolling Z-Score Analytics Engine
+- [x] **TASK-P0-06**: Implement EWMA & Rolling Z-Score Analytics Engine
   - **Files Touched**: `pkg/ds/slidingwindow/ewma.go`, `pkg/ds/slidingwindow/ewma_test.go`
   - **Acceptance Criteria**: Exponential smoothing, rolling variance (Welford or sliding window), z-score calculation, warm-up period enforcement, unit tests with synthetic anomaly spikes.
   - **Priority**: P0
