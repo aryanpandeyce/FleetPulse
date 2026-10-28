@@ -155,12 +155,43 @@ func (s *Server) EvaluateCompliance(ctx context.Context, req *inventoryv1.Evalua
 
 	return &inventoryv1.EvaluateComplianceResponse{
 		Result: &inventoryv1.ComplianceResult{
-			Id:               res.ID,
-			DeviceId:         res.DeviceID,
-			ProfileId:        res.ProfileID,
-			Status:           res.Status,
-			DriftDetails:     protoDrifts,
+			Id:              res.ID,
+			DeviceId:        res.DeviceID,
+			ProfileId:       res.ProfileID,
+			Status:          res.Status,
+			DriftDetails:    protoDrifts,
 			EvaluatedAtUnix: res.EvaluatedAt.Unix(),
+		},
+	}, nil
+}
+
+// GetServerProfile retrieves a server profile by ID.
+func (s *Server) GetServerProfile(ctx context.Context, req *inventoryv1.GetServerProfileRequest) (*inventoryv1.GetServerProfileResponse, error) {
+	orgID := logging.OrgIDFromContext(ctx)
+	if orgID == "" {
+		return nil, status.Error(codes.Unauthenticated, "missing tenant context")
+	}
+	if req.Id == "" {
+		return nil, status.Error(codes.InvalidArgument, "id is required")
+	}
+
+	p, err := s.svc.GetServerProfile(ctx, orgID, req.Id)
+	if err != nil {
+		if err == domain.ErrProfileNotFound {
+			return nil, status.Errorf(codes.NotFound, "%v", err)
+		}
+		return nil, status.Errorf(codes.Internal, "failed to get profile: %v", err)
+	}
+
+	return &inventoryv1.GetServerProfileResponse{
+		Profile: &inventoryv1.ServerProfile{
+			Id:             p.ID,
+			OrgId:          p.OrgID,
+			Name:           p.Name,
+			Description:    p.Description,
+			TargetFirmware: p.TargetFirmware,
+			PowerPolicy:    p.PowerPolicy,
+			BootOrder:      p.BootOrder,
 		},
 	}, nil
 }

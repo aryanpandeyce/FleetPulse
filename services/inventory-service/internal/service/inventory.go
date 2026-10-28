@@ -258,6 +258,18 @@ func (s *Service) EvaluateCompliance(ctx context.Context, orgID, deviceID string
 	return result, nil
 }
 
+// GetServerProfile returns a server profile by ID.
+func (s *Service) GetServerProfile(ctx context.Context, orgID, profileID string) (*domain.ServerProfile, error) {
+	p, err := s.repo.GetProfile(ctx, orgID, profileID)
+	if err != nil {
+		return nil, err
+	}
+	if p == nil {
+		return nil, domain.ErrProfileNotFound
+	}
+	return p, nil
+}
+
 func encodeCursor(t time.Time, id string) string {
 	raw := fmt.Sprintf("%d:%s", t.UnixNano(), id)
 	return base64.URLEncoding.EncodeToString([]byte(raw))
