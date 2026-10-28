@@ -62,7 +62,7 @@
   - **Dependencies**: TASK-P0-07
 
 ### Microservices Implementation
-- [ ] **TASK-P0-09**: Implement Inventory Service & PostgreSQL Migrations
+- [x] **TASK-P0-09**: Implement Inventory Service & PostgreSQL Migrations
   - **Files Touched**: `services/inventory-service/...`, `scripts/migrations/001_initial_schema.sql`
   - **Acceptance Criteria**: SQL schema migrations with keyset pagination indexes, domain models, pgx repository, LRU cache integration, claim flow with single-use verification, compliance engine detecting drift, gRPC server, table-driven unit tests.
   - **Priority**: P0
