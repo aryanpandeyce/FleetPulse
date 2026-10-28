@@ -35,7 +35,7 @@ jobs:
       - name: Enforce >= 80% Statement Coverage Gate on Internal Packages
         run: |
           echo "=== Calculating Statement Coverage for Internal Packages ==="
-          TOTAL_COV=$(go tool cover -func=coverage.txt | grep 'total:' | awk '{print $3}' | tr -d '%')
+          TOTAL_COV=$(go tool cover -func=coverage.txt | grep 'total:' | awk '{print $NF}' | tr -d '%')
           echo "Total Statement Coverage: ${TOTAL_COV}%"
           
           # Gate enforcement
