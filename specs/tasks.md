@@ -80,7 +80,7 @@
   - **Priority**: P0
   - **Dependencies**: TASK-P0-02, TASK-P0-08
 
-- [ ] **TASK-P0-12**: Implement Telemetry Service & Anomaly Detection
+- [x] **TASK-P0-12**: Implement Telemetry Service & Anomaly Detection
   - **Files Touched**: `services/telemetry-service/...`
   - **Acceptance Criteria**: NATS JetStream consumer with durable queue group, Redis ring buffer storage (last 120 samples), stateful consecutive alarm rule evaluation, EWMA + z-score anomaly detector flagging spikes, gRPC server, unit + benchmark tests.
   - **Priority**: P0
