@@ -139,7 +139,7 @@
   - **Priority**: P1
   - **Dependencies**: TASK-P0-14
 
-- [ ] **TASK-P1-04**: Infrastructure as Code with Terraform & LocalStack
+- [x] **TASK-P1-04**: Infrastructure as Code with Terraform & LocalStack
   - **Files Touched**: `deploy/terraform/main.tf`, `deploy/terraform/s3.tf`, `deploy/terraform/sqs.tf`
   - **Acceptance Criteria**: Terraform provisions S3 buckets (`fleetpulse-firmware`, telemetry archives) and SQS DLQ queues against LocalStack.
   - **Priority**: P1
