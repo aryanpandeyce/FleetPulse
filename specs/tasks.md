@@ -151,7 +151,7 @@
   - **Priority**: P1
   - **Dependencies**: TASK-P0-13
 
-- [ ] **TASK-P1-06**: Circuit Breaker & Dead-Letter Queue Handling
+- [x] **TASK-P1-06**: Circuit Breaker & Dead-Letter Queue Handling
   - **Files Touched**: `pkg/circuitbreaker/breaker.go`, `pkg/circuitbreaker/breaker_test.go`
   - **Acceptance Criteria**: Three-state circuit breaker (Closed, Open, Half-Open), poison messages forwarded to `telemetry.dlq` and `workflow.dlq`.
   - **Priority**: P1
