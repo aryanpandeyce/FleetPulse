@@ -93,7 +93,7 @@
   - **Dependencies**: TASK-P0-03, TASK-P0-08
 
 ### Full Stack Composition, CI & Developer Experience
-- [ ] **TASK-P0-14**: Full Stack Docker Compose, Seed Data & Makefile
+- [x] **TASK-P0-14**: Full Stack Docker Compose, Seed Data & Makefile
   - **Files Touched**: `deploy/docker-compose.yml`, `scripts/seed.sql`, `Makefile`
   - **Acceptance Criteria**: Multi-service Docker Compose (Postgres, Redis, NATS, LocalStack, Gateway, Inventory, Telemetry, Workflow, Simulator), seed script populating 2 orgs and 3 users each, working `make up`, `make test`, `make lint`.
   - **Priority**: P0

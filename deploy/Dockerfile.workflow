@@ -1,0 +1,25 @@
+# Build stage
+FROM golang:1.22-alpine AS builder
+
+WORKDIR /src
+RUN apk add --no-cache git ca-certificates
+
+COPY go.mod go.sum ./
+RUN go mod download
+
+COPY . .
+RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-w -s" -o /bin/workflow-service ./services/workflow-service/cmd
+
+# Final minimal runtime
+FROM alpine:3.19
+
+RUN addgroup -S -g 10001 fleetpulse && \
+    adduser -S -u 10001 -G fleetpulse fleetpulse
+
+USER fleetpulse:fleetpulse
+WORKDIR /home/fleetpulse
+
+COPY --from=builder /bin/workflow-service /usr/local/bin/workflow-service
+
+EXPOSE 50053
+ENTRYPOINT ["/usr/local/bin/workflow-service"]

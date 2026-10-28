@@ -1,0 +1,164 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: fleetpulse-postgres
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: fleetpulse
+      POSTGRES_USER: fleetpulse
+      POSTGRES_PASSWORD: fleetpulse_secret
+    volumes:
+      - ../scripts/migrations/001_initial_schema.sql:/docker-entrypoint-initdb.d/01_schema.sql:ro
+      - ../scripts/seed.sql:/docker-entrypoint-initdb.d/02_seed.sql:ro
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U fleetpulse -d fleetpulse"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: fleetpulse-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  nats:
+    image: nats:2.10-alpine
+    container_name: fleetpulse-nats
+    restart: unless-stopped
+    command: ["-js", "-m", "8222"]
+    ports:
+      - "4222:4222"
+      - "8222:8222"
+
+  localstack:
+    image: localstack/localstack:3.0
+    container_name: fleetpulse-localstack
+    restart: unless-stopped
+    ports:
+      - "4566:4566"
+    environment:
+      - SERVICES=s3,sqs
+      - DEFAULT_REGION=us-east-1
+
+  inventory-service:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile.inventory
+    container_name: fleetpulse-inventory
+    restart: unless-stopped
+    ports:
+      - "50051:50051"
+    environment:
+      - PORT=50051
+      - DATABASE_URL=postgres://fleetpulse:fleetpulse_secret@postgres:5432/fleetpulse?sslmode=disable
+      - LOG_LEVEL=info
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  telemetry-service:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile.telemetry
+    container_name: fleetpulse-telemetry
+    restart: unless-stopped
+    ports:
+      - "50052:50052"
+    environment:
+      - GRPC_PORT=50052
+      - NATS_URL=nats://nats:4222
+      - REDIS_URL=redis:6379
+      - LOG_LEVEL=info
+    depends_on:
+      - nats
+      - redis
+
+  workflow-service:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile.workflow
+    container_name: fleetpulse-workflow
+    restart: unless-stopped
+    ports:
+      - "50053:50053"
+    environment:
+      - GRPC_PORT=50053
+      - SIMULATOR_URL=http://device-simulator:8081
+      - LOG_LEVEL=info
+    depends_on:
+      - postgres
+      - redis
+
+  device-simulator:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile.simulator
+    container_name: fleetpulse-simulator
+    restart: unless-stopped
+    ports:
+      - "8081:8081"
+    environment:
+      - PORT=8081
+      - SIM_DEVICE_COUNT=100
+      - SIM_INTERVAL=5
+      - NATS_URL=nats://nats:4222
+    depends_on:
+      - nats
+
+  gateway:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile.gateway
+    container_name: fleetpulse-gateway
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      - PORT=8080
+      - REDIS_URL=redis:6379
+      - INVENTORY_GRPC_ADDR=inventory-service:50051
+      - TELEMETRY_GRPC_ADDR=telemetry-service:50052
+      - WORKFLOW_GRPC_ADDR=workflow-service:50053
+      - JWT_SECRET=fleetpulse-production-super-secret-jwt-key-32-bytes
+      - RATE_LIMIT_BURST=100
+      - RATE_LIMIT_REFILL_RATE=20
+      - LOG_LEVEL=info
+    depends_on:
+      - redis
+      - inventory-service
+      - telemetry-service
+      - workflow-service
+
+  prometheus:
+    image: prom/prometheus:v2.50.1
+    container_name: fleetpulse-prometheus
+    restart: unless-stopped
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+
+  grafana:
+    image: grafana/grafana:10.3.3
+    container_name: fleetpulse-grafana
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+
+volumes:
+  pgdata:
