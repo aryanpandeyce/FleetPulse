@@ -49,7 +49,7 @@
   - **Dependencies**: TASK-P0-01
 
 ### Foundational Shared Libraries & API Contracts
-- [ ] **TASK-P0-07**: Implement Foundational Infrastructure Packages
+- [x] **TASK-P0-07**: Implement Foundational Infrastructure Packages
   - **Files Touched**: `pkg/logging/logger.go`, `pkg/auth/jwt.go`, `pkg/httpx/middleware.go`, `pkg/grpcx/interceptors.go`, `pkg/metrics/metrics.go`
   - **Acceptance Criteria**: `slog` JSON formatting with context request IDs, JWT signing/claims parsing, HTTP recovery/CORS/request ID middlewares, gRPC interceptors for `org_id` metadata, Prometheus RED collectors.
   - **Priority**: P0
