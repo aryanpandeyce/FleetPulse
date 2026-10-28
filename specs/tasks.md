@@ -99,7 +99,7 @@
   - **Priority**: P0
   - **Dependencies**: TASK-P0-09, TASK-P0-10, TASK-P0-11, TASK-P0-12, TASK-P0-13
 
-- [ ] **TASK-P0-15**: Multi-Stage Dockerfiles & GitHub Actions CI with Coverage Gate
+- [x] **TASK-P0-15**: Multi-Stage Dockerfiles & GitHub Actions CI with Coverage Gate
   - **Files Touched**: `deploy/Dockerfile.*`, `.github/workflows/ci.yml`
   - **Acceptance Criteria**: Non-root alpine/distroless Dockerfiles; CI workflow running `golangci-lint`, `go test -race -cover`, enforcing $\ge 80\%$ statement coverage gate on `internal/` packages.
   - **Priority**: P0

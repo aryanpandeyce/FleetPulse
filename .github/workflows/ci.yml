@@ -1,0 +1,105 @@
+name: FleetPulse CI
+
+on:
+  push:
+    branches: [ master, main ]
+  pull_request:
+    branches: [ master, main ]
+
+jobs:
+  backend-test:
+    name: Test & Coverage Gate (>= 80%)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.22'
+          cache: true
+
+      - name: Verify Dependencies
+        run: go mod verify
+
+      - name: Go Vet Static Analysis
+        run: go vet ./...
+
+      - name: Run Unit Tests with Race Detector
+        run: |
+          go test -race -v -coverprofile=coverage.txt -covermode=atomic ./pkg/... ./services/...
+
+      - name: Enforce >= 80% Statement Coverage Gate on Internal Packages
+        run: |
+          echo "=== Calculating Statement Coverage for Internal Packages ==="
+          TOTAL_COV=$(go tool cover -func=coverage.txt | grep 'total:' | awk '{print $3}' | tr -d '%')
+          echo "Total Statement Coverage: ${TOTAL_COV}%"
+          
+          # Gate enforcement
+          THRESHOLD=80.0
+          awk -v cov="${TOTAL_COV}" -v thresh="${THRESHOLD}" 'BEGIN {
+            if (cov + 0 < thresh + 0) {
+              print "ERROR: Coverage " cov "% is strictly below the constitutional gate of " thresh "%!";
+              exit 1;
+            } else {
+              print "SUCCESS: Coverage " cov "% satisfies the constitutional gate of " thresh "%!";
+            }
+          }'
+
+      - name: Upload Coverage Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage.txt
+
+  docker-build:
+    name: Validate Container Builds
+    needs: backend-test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Gateway Image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: deploy/Dockerfile.gateway
+          push: false
+          tags: fleetpulse/gateway:test
+
+      - name: Build Inventory Service Image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: deploy/Dockerfile.inventory
+          push: false
+          tags: fleetpulse/inventory-service:test
+
+      - name: Build Telemetry Service Image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: deploy/Dockerfile.telemetry
+          push: false
+          tags: fleetpulse/telemetry-service:test
+
+      - name: Build Workflow Service Image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: deploy/Dockerfile.workflow
+          push: false
+          tags: fleetpulse/workflow-service:test
+
+      - name: Build Device Simulator Image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: deploy/Dockerfile.simulator
+          push: false
+          tags: fleetpulse/device-simulator:test
