@@ -1,7 +1,7 @@
 # FleetPulse
 
-[![CI](https://github.com/aryan9926/FleetPulse/actions/workflows/ci.yml/badge.svg)](https://github.com/aryan9926/FleetPulse/actions/workflows/ci.yml)
-[![Pages](https://github.com/aryan9926/FleetPulse/actions/workflows/dashboard-pages.yml/badge.svg)](https://github.com/aryan9926/FleetPulse/actions/workflows/dashboard-pages.yml)
+[![CI](https://github.com/aryanpandeyce/FleetPulse/actions/workflows/ci.yml/badge.svg)](https://github.com/aryanpandeyce/FleetPulse/actions/workflows/ci.yml)
+[![Pages](https://github.com/aryanpandeyce/FleetPulse/actions/workflows/dashboard-pages.yml/badge.svg)](https://github.com/aryanpandeyce/FleetPulse/actions/workflows/dashboard-pages.yml)
 [![Go Version](https://img.shields.io/badge/go-1.22%2B-blue.svg)](https://golang.org)
 [![Coverage](https://img.shields.io/badge/coverage-%E2%89%A580%25-brightgreen.svg)](specs/constitution.md)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
@@ -12,7 +12,7 @@ FleetPulse is a cloud-native, multi-tenant fleet management platform inspired by
 
 ## Live Demo & Visual Overview
 
-- **Interactive Dashboard (GitHub Pages)**: [https://aryan9926.github.io/FleetPulse/](https://aryan9926.github.io/FleetPulse/)
+- **Interactive Dashboard (GitHub Pages)**: [https://aryanpandeyce.github.io/FleetPulse/](https://aryanpandeyce.github.io/FleetPulse/)
 - **Demo Mode**: Built-in deterministic in-browser simulation running independent pseudo-random walk telemetry streams for Acme Corp and Globex Industries without requiring local infrastructure.
 
 ```
