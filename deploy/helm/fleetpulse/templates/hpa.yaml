@@ -1,0 +1,47 @@
+{{- if .Values.gateway.autoscaling.enabled }}
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ include "fleetpulse.fullname" . }}-gateway-hpa
+  labels:
+    {{- include "fleetpulse.labels" . | nindent 4 }}
+    app.kubernetes.io/component: gateway
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ include "fleetpulse.fullname" . }}-gateway
+  minReplicas: {{ .Values.gateway.autoscaling.minReplicas }}
+  maxReplicas: {{ .Values.gateway.autoscaling.maxReplicas }}
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.gateway.autoscaling.targetCPUUtilizationPercentage }}
+{{- end }}
+---
+{{- if .Values.telemetry.autoscaling.enabled }}
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ include "fleetpulse.fullname" . }}-telemetry-hpa
+  labels:
+    {{- include "fleetpulse.labels" . | nindent 4 }}
+    app.kubernetes.io/component: telemetry
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ include "fleetpulse.fullname" . }}-telemetry
+  minReplicas: {{ .Values.telemetry.autoscaling.minReplicas }}
+  maxReplicas: {{ .Values.telemetry.autoscaling.maxReplicas }}
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.telemetry.autoscaling.targetCPUUtilizationPercentage }}
+{{- end }}

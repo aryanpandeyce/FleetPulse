@@ -1,0 +1,29 @@
+{{- if .Values.gateway.pdb.enabled }}
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ include "fleetpulse.fullname" . }}-gateway-pdb
+  labels:
+    {{- include "fleetpulse.labels" . | nindent 4 }}
+    app.kubernetes.io/component: gateway
+spec:
+  minAvailable: {{ .Values.gateway.pdb.minAvailable }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: gateway
+{{- end }}
+---
+{{- if .Values.telemetry.pdb.enabled }}
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ include "fleetpulse.fullname" . }}-telemetry-pdb
+  labels:
+    {{- include "fleetpulse.labels" . | nindent 4 }}
+    app.kubernetes.io/component: telemetry
+spec:
+  minAvailable: {{ .Values.telemetry.pdb.minAvailable }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: telemetry
+{{- end }}

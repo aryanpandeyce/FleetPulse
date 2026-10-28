@@ -1,0 +1,143 @@
+# FleetPulse Gateway Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "fleetpulse.fullname" . }}-gateway
+  labels:
+    {{- include "fleetpulse.labels" . | nindent 4 }}
+    app.kubernetes.io/component: gateway
+spec:
+  replicas: {{ .Values.gateway.replicaCount }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: gateway
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/component: gateway
+    spec:
+      containers:
+        - name: gateway
+          image: "{{ .Values.gateway.image.repository }}:{{ .Values.gateway.image.tag }}"
+          imagePullPolicy: {{ .Values.global.imagePullPolicy }}
+          ports:
+            - containerPort: {{ .Values.gateway.port }}
+              name: http
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          resources:
+            {{- toYaml .Values.gateway.resources | nindent 12 }}
+---
+# FleetPulse Telemetry Service Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "fleetpulse.fullname" . }}-telemetry
+  labels:
+    {{- include "fleetpulse.labels" . | nindent 4 }}
+    app.kubernetes.io/component: telemetry
+spec:
+  replicas: {{ .Values.telemetry.replicaCount }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: telemetry
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/component: telemetry
+    spec:
+      containers:
+        - name: telemetry
+          image: "{{ .Values.telemetry.image.repository }}:{{ .Values.telemetry.image.tag }}"
+          imagePullPolicy: {{ .Values.global.imagePullPolicy }}
+          ports:
+            - containerPort: {{ .Values.telemetry.port }}
+              name: grpc
+          resources:
+            {{- toYaml .Values.telemetry.resources | nindent 12 }}
+---
+# FleetPulse Inventory Service Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "fleetpulse.fullname" . }}-inventory
+  labels:
+    {{- include "fleetpulse.labels" . | nindent 4 }}
+    app.kubernetes.io/component: inventory
+spec:
+  replicas: {{ .Values.inventory.replicaCount }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: inventory
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/component: inventory
+    spec:
+      containers:
+        - name: inventory
+          image: "{{ .Values.inventory.image.repository }}:{{ .Values.inventory.image.tag }}"
+          imagePullPolicy: {{ .Values.global.imagePullPolicy }}
+          ports:
+            - containerPort: {{ .Values.inventory.port }}
+              name: grpc
+          resources:
+            {{- toYaml .Values.inventory.resources | nindent 12 }}
+---
+# FleetPulse Workflow Service Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "fleetpulse.fullname" . }}-workflow
+  labels:
+    {{- include "fleetpulse.labels" . | nindent 4 }}
+    app.kubernetes.io/component: workflow
+spec:
+  replicas: {{ .Values.workflow.replicaCount }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: workflow
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/component: workflow
+    spec:
+      containers:
+        - name: workflow
+          image: "{{ .Values.workflow.image.repository }}:{{ .Values.workflow.image.tag }}"
+          imagePullPolicy: {{ .Values.global.imagePullPolicy }}
+          ports:
+            - containerPort: {{ .Values.workflow.port }}
+              name: grpc
+          resources:
+            {{- toYaml .Values.workflow.resources | nindent 12 }}

@@ -121,7 +121,7 @@
 
 ## Phase 2: P1 Capabilities
 
-- [ ] **TASK-P1-01**: Production Helm Chart & Kind Local Cluster Automation
+- [x] **TASK-P1-01**: Production Helm Chart & Kind Local Cluster Automation
   - **Files Touched**: `deploy/helm/fleetpulse/...`, `deploy/kind-config.yaml`
   - **Acceptance Criteria**: Deployments with probes, HPA, PDB, RollingUpdate strategy, `make kind-up` script.
   - **Priority**: P1

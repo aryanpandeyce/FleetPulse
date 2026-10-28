@@ -1,0 +1,67 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "fleetpulse.fullname" . }}-gateway
+  labels:
+    {{- include "fleetpulse.labels" . | nindent 4 }}
+    app.kubernetes.io/component: gateway
+spec:
+  type: ClusterIP
+  ports:
+    - port: {{ .Values.gateway.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/component: gateway
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "fleetpulse.fullname" . }}-inventory
+  labels:
+    {{- include "fleetpulse.labels" . | nindent 4 }}
+    app.kubernetes.io/component: inventory
+spec:
+  type: ClusterIP
+  ports:
+    - port: {{ .Values.inventory.port }}
+      targetPort: grpc
+      protocol: TCP
+      name: grpc
+  selector:
+    app.kubernetes.io/component: inventory
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "fleetpulse.fullname" . }}-telemetry
+  labels:
+    {{- include "fleetpulse.labels" . | nindent 4 }}
+    app.kubernetes.io/component: telemetry
+spec:
+  type: ClusterIP
+  ports:
+    - port: {{ .Values.telemetry.port }}
+      targetPort: grpc
+      protocol: TCP
+      name: grpc
+  selector:
+    app.kubernetes.io/component: telemetry
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "fleetpulse.fullname" . }}-workflow
+  labels:
+    {{- include "fleetpulse.labels" . | nindent 4 }}
+    app.kubernetes.io/component: workflow
+spec:
+  type: ClusterIP
+  ports:
+    - port: {{ .Values.workflow.port }}
+      targetPort: grpc
+      protocol: TCP
+      name: grpc
+  selector:
+    app.kubernetes.io/component: workflow
